@@ -26,10 +26,12 @@ RUN set -ex \
 ENV PYTHON_LIBRARY_PATH /opt/venv
 ENV PATH ${PYTHON_LIBRARY_PATH}/bin:${PATH}
 
+COPY ./charm /usr/src/charm 
+
 RUN set -ex \
         \
-        && mkdir -p /usr/src/charm \
-        && git clone https://github.com/JHUISI/charm.git /usr/src/charm \
+        # && mkdir -p /usr/src/charm \
+        # && git clone https://github.com/JHUISI/charm.git /usr/src/charm \
         && cd /usr/src/charm \
         && python -m venv ${PYTHON_LIBRARY_PATH} \
         && ./configure.sh \
