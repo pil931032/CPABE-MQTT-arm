@@ -7,7 +7,7 @@ services:
     build: ./dockerfiles/base-arm/
     tty: true
     volumes:
-      - ./codes/Broker/:/code
+      - ./codes/Publisher/:/code
     working_dir: /code
     # ports:
     #   - "1883:1883"
