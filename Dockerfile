@@ -14,8 +14,8 @@ ENV LIBRARY_INCLUDE_PATH /usr/local/include
 # PBC
 RUN apt-get install libgmp-dev flex bison -y
 RUN wget https://crypto.stanford.edu/pbc/files/pbc-0.5.14.tar.gz \
-    && tar zxvf pbc-0.5.14.tar.gz -C pbc \
-    && cd pbc \
+    && tar zxvf pbc-0.5.14.tar.gz \
+    && cd pbc-0.5.14 \
     && ./configure \
     && make \
     && make install
