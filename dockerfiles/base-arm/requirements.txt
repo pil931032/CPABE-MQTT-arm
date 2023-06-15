@@ -8,3 +8,4 @@ pycryptodome
 requests
 gpiozero
 rich
+psutil
