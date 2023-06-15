@@ -227,7 +227,7 @@ else
 fi
 
 case "$cpu" in
-  alpha|cris|ia64|lm32|m68k|microblaze|ppc|ppc64|sparc64|unicore32|armv6l|armv7l|s390|s390x|arm64)
+  alpha|cris|ia64|lm32|m68k|microblaze|ppc|ppc64|sparc64|unicore32|armv6l|armv7l|s390|s390x|arm64|aarch64)
     cpu="$cpu"
   ;;
   i386|i486|i586|i686|i86pc|BePC)
@@ -592,7 +592,7 @@ else
 
 # if cross compiling, cannot launch a program, so make a static guess
 case "$cpu" in
-  armv4b|hppa|m68k|mips|mips64|ppc|ppc64|s390|s390x|sparc|sparc64|aarch64)
+  armv4b|hppa|m68k|mips|mips64|ppc|ppc64|s390|s390x|sparc|sparc64)
     bigendian=yes
   ;;
 esac
