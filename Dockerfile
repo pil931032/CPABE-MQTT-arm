@@ -28,10 +28,10 @@ RUN wget https://crypto.stanford.edu/pbc/files/pbc-0.5.14.tar.gz \
 #                 /usr/local/lib/libpbc.so.1.0.0  \
 #                 /usr/local/lib/libpbc.so.1.0.0
 
-RUN set -ex \
-    && cd /usr/local/lib \
-    && ln -s libpbc.so.1.0.0 libpbc.so \
-    && ln -s libpbc.so.1.0.0 libpbc.so.1
+# RUN set -ex \
+#     && cd /usr/local/lib \
+#     && ln -s libpbc.so.1.0.0 libpbc.so \
+#     && ln -s libpbc.so.1.0.0 libpbc.so.1
 
 ENV PYTHON_LIBRARY_PATH /opt/venv
 ENV PATH ${PYTHON_LIBRARY_PATH}/bin:${PATH}
