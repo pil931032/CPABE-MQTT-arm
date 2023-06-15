@@ -9,7 +9,15 @@ services:
     volumes:
       - ./codes/Publisher/:/code
     working_dir: /code
-    # ports:
-    #   - "1883:1883"
+    command: "/bin/bash"
+    # environment:
+  #Subscriber
+  subscriber:
+    image: cpabe-arm-dev-image:0.0
+    build: ./dockerfiles/base-arm/
+    tty: true
+    volumes:
+      - ./codes/Subscriber/:/code
+    working_dir: /code
     command: "/bin/bash"
     # environment:
