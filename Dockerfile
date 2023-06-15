@@ -26,7 +26,9 @@ RUN set -ex \
 ENV PYTHON_LIBRARY_PATH /opt/venv
 ENV PATH ${PYTHON_LIBRARY_PATH}/bin:${PATH}
 
-COPY ./charm /usr/src/charm 
+COPY ./charm /usr/src/charm
+
+RUN chmod -R 777 /usr/src/charm
 
 RUN set -ex \
         \
