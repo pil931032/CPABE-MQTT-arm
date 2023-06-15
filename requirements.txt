@@ -1,0 +1,8 @@
+charm-crypto
+amqtt
+pyyaml
+flask
+flask-cors
+pyOpenSSL
+pycryptodome
+requests
