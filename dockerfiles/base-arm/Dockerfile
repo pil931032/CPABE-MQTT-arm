@@ -20,19 +20,6 @@ RUN wget https://crypto.stanford.edu/pbc/files/pbc-0.5.14.tar.gz \
     && make \
     && make install
 
-
-# COPY --from=initc3/pbc:0.5.14-buster \
-#                 /usr/local/include/pbc \
-#                 /usr/local/include/pbc
-# COPY --from=initc3/pbc:0.5.14-buster \
-#                 /usr/local/lib/libpbc.so.1.0.0  \
-#                 /usr/local/lib/libpbc.so.1.0.0
-
-# RUN set -ex \
-#     && cd /usr/local/lib \
-#     && ln -s libpbc.so.1.0.0 libpbc.so \
-#     && ln -s libpbc.so.1.0.0 libpbc.so.1
-
 ENV PYTHON_LIBRARY_PATH /opt/venv
 ENV PATH ${PYTHON_LIBRARY_PATH}/bin:${PATH}
 

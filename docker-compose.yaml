@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  #Publisher
+  publisher:
+    image: cpabe-arm-dev-image:0.0
+    build: ./dockerfiles/base-arm/
+    tty: true
+    volumes:
+      - ./codes/Broker/:/code
+    working_dir: /code
+    # ports:
+    #   - "1883:1883"
+    command: "/bin/bash"
+    # environment:

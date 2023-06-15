@@ -1,0 +1,5 @@
+BrockerIP: 192.168.184.252
+BrockerLoginUser: Publisher-1
+BrockerLoginPassword: abc123
+IntervelTimeSecond: 2
+Policy: ((OFFICER or WORKER) and (DEVELOPER or MAINTAINER))
