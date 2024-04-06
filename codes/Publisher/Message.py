@@ -20,7 +20,7 @@ class Message:
         plain_text_message = dict()
         plain_text_message['CPU_Temperature'] = cpu.temperature
         plain_text_message['CPU_Usage'] = psutil.cpu_percent()
-        plain_text_message['RAM_Usage'] = psutil.virtual_memory().percent
+        plain_text_message['RAM_Usage'] = psutil.virtual_memory().percent   
         plain_text = json.dumps(plain_text_message)
         
         encryption = Encryption()

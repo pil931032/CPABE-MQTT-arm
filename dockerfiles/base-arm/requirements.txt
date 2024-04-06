@@ -10,3 +10,4 @@ gpiozero
 rich
 psutil
 colorama
+RPi.GPIO
