@@ -3,4 +3,5 @@ BrockerLoginUser: Publisher-1
 BrockerLoginPassword: abc123
 IntervelTimeSecond: 2
 # Policy: ((OFFICER or WORKER) and (DEVELOPER or MAINTAINER))
-Policy: (((E or C) or (B and F)) and ((A and I) or H))
+Policy: (((A and B) and (C and D)) and ((E and F) and K))
+NewPolicy: (((E or C) or (B and F)) and ((A and I) or H))

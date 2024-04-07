@@ -24,7 +24,8 @@ class Message:
         plain_text = json.dumps(plain_text_message)
         
         encryption = Encryption()
-        cipher_AES_Key,cipher_text = encryption.encrypt(plain_text)
+        cipher_AES_Key,cipher_text,policy = encryption.encrypt(plain_text) #add return policy
+        self.message['policy']=policy  #return policy
 
         self.message['Cipher_AES_Key'] = cipher_AES_Key
         self.message['Cipher_Text'] = cipher_text

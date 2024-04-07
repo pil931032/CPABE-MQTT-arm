@@ -3,6 +3,7 @@ import asyncio
 import yaml
 import time
 from Message import Message
+from abenc_lwh import ABENCLWH
 from amqtt.client import MQTTClient
 from amqtt.mqtt.constants import QOS_0, QOS_1, QOS_2
 from Render import Render
@@ -22,19 +23,31 @@ def load_setting():
 async def main_loop(setting):
     # MQTT send
     MQTT_client = MQTTClient()
-    
+
+    # -----send the same message-----
+    message = Message()
+    message_text,plain_text = message.get()
+    message_object = json.loads(message_text)
+    plain_text_object = json.loads(plain_text)
+    # -----send the same message-----
+
     while True:
         try:
             await MQTT_client.connect('mqtt://'+setting['BrockerIP']+'/')
-            message = Message()
-            message_text,plain_text = message.get()
-            message_object = json.loads(message_text)
-            plain_text_object = json.loads(plain_text)
+
+            # -----send different message-----
+            # message = Message()
+            # message_text,plain_text = message.get()
+            # message_object = json.loads(message_text)
+            # plain_text_object = json.loads(plain_text)
+            # -----send different message-----
+
+            # print(type(message_object))
             tasks = [
                 asyncio.ensure_future(MQTT_client.publish('message/public', message_text.encode(encoding='utf-8'), qos=QOS_2)),
             ]
             # datetime_string = datetime.datetime.fromtimestamp(message_object['UTC-Time']).strftime('%Y-%m-%d %H:%M:%S')
-            # Rende Table
+            # Render Table
             render = Render()
             render.table(
                 CPU_Temperature = str(plain_text_object['CPU_Temperature']),
@@ -43,7 +56,7 @@ async def main_loop(setting):
                 Plain_text = plain_text,
                 Cipher_Key = message_object['Cipher_AES_Key'],
                 Cipher_Text = message_object['Cipher_Text'],
-                Policy = setting['Policy'],
+                Policy = message_object['policy'],#setting['Policy'],  #showing policy from CT directly
                 Brocker_IP = setting['BrockerIP'],
                 Topic = '/message/public',
                 # Time = datetime_string
