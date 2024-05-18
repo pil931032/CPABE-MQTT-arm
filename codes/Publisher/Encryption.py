@@ -191,6 +191,19 @@ class Encryption:
         test_d = cipher_AES_key.encode('utf-8')
         bytesToObject(test_d,PairingGroup('SS512'))
         # print('Success!',cipher_AES_key)
+
+
+# hash keyword 
+        keyword_list = setting['keyword']
+        keyword_val_in_z_p = {}
+        # print(keyword_list['kw0'])
+        for keyword_name in keyword_list:
+            # print(keyword_list[keyword_name])
+            keyword_val_in_z_p[keyword_name] = dac.group.hash(keyword_list[keyword_name], type=ZR)
+        # keyword_val_in_z_p = dac.group.hash(keyword_name, type=ZR)
+        print(keyword_val_in_z_p)
+
+
         return (cipher_AES_key,cipher_text,CT['policy'])  #return CT['policy']
 
 if __name__ == '__main__':
