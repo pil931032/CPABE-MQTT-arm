@@ -2,8 +2,14 @@ from charm.toolbox.pairinggroup import PairingGroup,ZR,G1,GT,pair
 from charm.toolbox.secretutil import SecretUtil
 from charm.toolbox.ABEncMultiAuth import ABEncMultiAuth
 from charm.schemes.abenc.abenc_dacmacs_yj14 import DACMACS
+import yaml
+import sympy as sp
 
 class ABENCLWH(DACMACS):
+    def load_setting(self):
+        with open('setting.yaml', 'r') as f:
+            return yaml.safe_load(f)
+
     def __init__(self, groupObj):
         self.util = SecretUtil(groupObj, verbose=False)  #Create Secret Sharing Scheme
         self.group = groupObj    #:Prime order group
@@ -46,12 +52,80 @@ class ABENCLWH(DACMACS):
         # print(policy)
         # print(type(policy))
         secret = self.group.random()
+        rho1 = self.group.random()
+        rho1_inv = rho1 ** (-1)
         # print("secret in abenc_lwh:",secret)
         shares = self.util.calculateSharesList(secret, policy)  #list
         old_shares = shares #preserved for policy compare
         # print("old shares in abenc:",old_shares)
         shares = dict([(x[0].getAttributeAndIndex(), x[1]) for x in shares])  #dict
         # print(authAttrs)
+
+# ploynomial test-----------------------
+
+        x = sp.symbols('x')
+        polynomial = 1
+        # polynomial = (x - 1) * (x - 2) * (x - 3)
+        # expanded_polynomial = sp.expand(polynomial)
+        # print("expanded_polynomial:", expanded_polynomial)
+
+# hash keyword -------------------------
+        setting = self.load_setting()
+        keyword_list = setting['keyword']
+        keyword_val_in_z_p = {}
+        keyword_val_in_z_p_a = []
+        coff = []
+        # print(keyword_list['kw0'])
+        for keyword_name in keyword_list:
+            # print(keyword_list[keyword_name])
+            
+            keyword_val = self.group.hash(keyword_list[keyword_name], type=ZR)
+            keyword_val_in_z_p_a.append(keyword_val)
+            polynomial = polynomial * (x - keyword_val)
+            keyword_val_in_z_p[keyword_name] = keyword_val
+
+
+        expanded_polynomial = sp.expand(polynomial) + 1
+        print("expanded_polynomial:", expanded_polynomial)
+        # print(keyword_val_in_z_p)
+        # print(keyword_val_in_z_p_a)
+        a = keyword_val_in_z_p_a[0]
+        b = keyword_val_in_z_p_a[1]
+        c = keyword_val_in_z_p_a[2]
+        d = keyword_val_in_z_p_a[3]
+
+        # Coefficient of x^4
+        coef_x4 = a ** 0
+        # Coefficient of x^3
+        coef_x3 = -(a + b + c + d)
+        # Coefficient of x^2
+        coef_x2 = (a*b + a*c + a*d + b*c + b*d + c*d)
+        # Coefficient of x
+        coef_x1 = -(a*b*c + a*b*d + a*c*d + b*c*d)
+        # Constant term
+        constant = a * b * c * d + 100
+        print("x4:", coef_x4)
+        print("x3:", coef_x3)
+        print("x2:", coef_x2)
+        print("x1:", coef_x1)
+        print("constant:", constant)
+
+
+# ---------------------------------------
+
+        specific_x = self.group.hash("v_kw1", type=ZR)
+        specific_x_substitution = expanded_polynomial.subs(x, specific_x)
+        print("using sympy:", specific_x_substitution)
+        print("sympy type: ", type(specific_x_substitution))
+
+        result_test = (specific_x ** 4) + coef_x3 * (specific_x ** 3) + coef_x2 * (specific_x ** 2) + coef_x1 * (specific_x ** 1) + constant
+        print("result = ", result_test)
+        print("original type: ", type(result_test))
+# ---------------------------------------
+        E = pair(GPP['g'], GPP['g']) ** (secret * rho1)
+        # print("E= ", E)
+        
+# ---------------------------------------
         C1 = k * (APK['e_alpha'] ** secret)
         C2 = GPP['g'] ** secret
         C3 = APK['g_beta_inv'] ** secret
