@@ -191,8 +191,22 @@ class Encryption:
         test_d = cipher_AES_key.encode('utf-8')
         bytesToObject(test_d,PairingGroup('SS512'))
         # print('Success!',cipher_AES_key)
+        
 
-
+# trapdoor------------------------------------------------
+        search_kw_list = setting['search_kw']
+        print(search_kw_list)
+        u = dac.group.random()        
+        rho2 = dac.group.random()
+        search_kw_val_in_z_p = []
+        for keyword_name in search_kw_list:
+            # print(keyword_list[keyword_name])
+            search_kw_val = dac.group.hash(search_kw_list[keyword_name], type=ZR)
+            search_kw_val_in_z_p.append(search_kw_val)
+        T1 = GPP['g'] ** u
+        T3 = u * rho2 * (((rho2/rho2) * len(search_kw_val_in_z_p)) ** (-1)) 
+        
+# trapdoor------------------------------------------------
         return (cipher_AES_key,cipher_text,CT['policy'])  #return CT['policy']
 
 if __name__ == '__main__':

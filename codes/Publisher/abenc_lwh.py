@@ -65,7 +65,7 @@ class ABENCLWH(DACMACS):
 # hash keyword -------------------------
         setting = self.load_setting()
         keyword_list = setting['keyword']
-        keyword_val_in_z_p = {}
+        # keyword_val_in_z_p = {}
         keyword_val_in_z_p_a = []
         I_hat = []
         # print(keyword_list['kw0'])
