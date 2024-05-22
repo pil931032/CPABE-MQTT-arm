@@ -11,4 +11,3 @@ rich
 psutil
 colorama
 RPi.GPIO
-sympy
