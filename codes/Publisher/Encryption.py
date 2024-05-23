@@ -195,9 +195,11 @@ class Encryption:
 
 # trapdoor------------------------------------------------
         search_kw_list = setting['search_kw']
-        print(search_kw_list)
+        keyword_list = setting['keyword']
+        # print(search_kw_list)
         u = dac.group.random()        
         rho2 = dac.group.random()
+        rho2_inv = rho2 ** (-1)
         search_kw_val_in_z_p = []
         for keyword_name in search_kw_list:
             # print(keyword_list[keyword_name])
@@ -205,8 +207,28 @@ class Encryption:
             search_kw_val_in_z_p.append(search_kw_val)
         T1 = GPP['g'] ** u
         T3 = u * rho2 * (((rho2/rho2) * len(search_kw_val_in_z_p)) ** (-1)) 
+        T5 = []
+        # print(search_kw_val_in_z_p)
+        for l1 in range(0, len(keyword_list) + 1):
+            T5.append(rho2_inv * (search_kw_val_in_z_p[0] ** (l1) + search_kw_val_in_z_p[1] ** (l1) + search_kw_val_in_z_p[2] ** (l1)))
+        # print(T5)
+# search test------------------------------------------------
+        # print(CT['C2'], T1)
+        left = pair(CT['C2'], T1)
+        print("left: ", left)
         
-# trapdoor------------------------------------------------
+        # print("I_hat: ", type(CT['I_hat']))
+        # print("T5: ", type(T5))
+        right_result = rho2 - rho2
+        for i, j in zip(CT['I_hat'], T5):
+            right_result = right_result + i * j  
+        # print(right_result)
+        right = CT['E'] ** (T3 * right_result)
+        print("right: ", right)
+        
+        if left == right:
+            print("left == right")
+#------------------------------------------------------------
         return (cipher_AES_key,cipher_text,CT['policy'])  #return CT['policy']
 
 if __name__ == '__main__':
