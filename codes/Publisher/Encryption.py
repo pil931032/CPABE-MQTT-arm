@@ -209,8 +209,14 @@ class Encryption:
         T3 = u * rho2 * (((rho2/rho2) * len(search_kw_val_in_z_p)) ** (-1)) 
         T5 = []
         # print(search_kw_val_in_z_p)
-        for l1 in range(0, len(keyword_list) + 1):
-            T5.append(rho2_inv * (search_kw_val_in_z_p[0] ** (l1) + search_kw_val_in_z_p[1] ** (l1) + search_kw_val_in_z_p[2] ** (l1)))
+        T5_temp = rho2 - rho2
+        for l1 in range(0, len(keyword_list) + 1):    
+            for i in range(0, len(search_kw_val_in_z_p) ):
+                # print(i,"  ", l1)
+                T5_temp = T5_temp + search_kw_val_in_z_p[i] ** (l1)
+            T5.append(rho2_inv * T5_temp)
+            T5_temp = rho2 - rho2
+                # T5.append(rho2_inv * (search_kw_val_in_z_p[0] ** (l1) + search_kw_val_in_z_p[1] ** (l1) + search_kw_val_in_z_p[2] ** (l1)))
         # print(T5)
 # search test------------------------------------------------
         # print(CT['C2'], T1)
