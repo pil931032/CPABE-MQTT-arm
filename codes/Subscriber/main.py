@@ -54,7 +54,7 @@ async def uptime_coro():
             transmission_time = str((receive_time - start_time).total_seconds())
             outsourcing_total_time = str(outsourcing_total_time.total_seconds())
             local_decrypt_total_time =  str(local_decrypt_total_time.total_seconds())
-            Render
+            # Render
             result = json.loads(plain_text)
             render = Render()
             render.table(

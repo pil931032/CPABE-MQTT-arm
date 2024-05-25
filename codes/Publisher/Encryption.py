@@ -72,6 +72,20 @@ class Encryption:
         # Retrun
         return (GPP,tuple(authority))
 
+    def load_trusted_party_password(self):
+        with open('trusted_party_password.yaml', 'r') as f:
+            return yaml.safe_load(f)
+    def get_trusted_party_decrypt_keys(self):
+        # Load server ip
+        setting = self.load_setting()
+        user_password = self.load_trusted_party_password()
+        # Receice global parameters
+        r = requests.get('https://'+setting['BrockerIP']+':443/trusted_party/decrypt-keys/'+user_password['user']+'/'+user_password['password'], verify=False)
+        obj = json.loads(r.text)
+        keys = obj['decrypt-keys']
+        keys = bytesToObject(keys,PairingGroup('SS512'))
+        return keys    
+
     def encrypt(self,message:str):
         dac = ABENCLWH(PairingGroup('SS512'))
         string_encode = StringEncode()
@@ -173,6 +187,11 @@ class Encryption:
             # print(CT['C'][list_old[i[1]-1]],"\n")  #print parameter 'C' after updation
         # print(CT)
 
+
+# type2 ['E_0', 'E_1'] problem
+        # for  i, j1, j2 in zip(I2, type2_UK_1, type2_UK_2):
+        #     CT['C'][list_old[i[1]-1]] = CT['C'][list_old[i[1]-1]] * (GPP['g_a'] ** j)
+
         for i, j1, j2, j3 in zip(I3, type3_UK_1, type3_UK_2, type3_UK_3):
             # print(list_new[i[0]-1])
             CT['C'][list_new[i[0]-1]] = j1
@@ -221,20 +240,20 @@ class Encryption:
 # search test------------------------------------------------
         # print(CT['C2'], T1)
         left = pair(CT['C2'], T1)
-        print("left: ", left)
         
-        # print("I_hat: ", type(CT['I_hat']))
-        # print("T5: ", type(T5))
         right_result = rho2 - rho2
         for i, j in zip(CT['I_hat'], T5):
             right_result = right_result + i * j  
         # print(right_result)
         right = CT['E'] ** (T3 * right_result)
-        print("right: ", right)
         
-        if left == right:
-            print("left == right")
+        # print("left: ", left)
+        # print("right: ", right)
+        # if left == right:
+        #     print("left == right")
 #------------------------------------------------------------
+        trusted_party_decrypt_key = self.get_trusted_party_decrypt_keys()
+        print(trusted_party_decrypt_key)
         return (cipher_AES_key,cipher_text,CT['policy'])  #return CT['policy']
 
 if __name__ == '__main__':
