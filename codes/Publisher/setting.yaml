@@ -4,7 +4,7 @@ BrockerLoginUser: Publisher-1
 BrockerLoginPassword: abc123
 IntervelTimeSecond: 2
 # Policy: ((OFFICER or WORKER) and (DEVELOPER or MAINTAINER))
-Policy: (((A and B) and (C and D)) and ((E and F) and K))
 NewPolicy: (((E or C) or (B and F)) and ((A and I) or H))
+Policy: (((A and B) and (C and D)) and ((E and F) and K))
 keyword: {kw1: v_kw1, kw2: v_kw2, kw3: v_kw3, kw4: v_kw4}
 search_kw: {kw1: v_kw1, kw2: v_kw2, kw3: v_kw3}

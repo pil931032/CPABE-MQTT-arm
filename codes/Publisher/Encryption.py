@@ -222,7 +222,8 @@ class Encryption:
             CT['D'][list_new[i[0]-1]] = j2
             CT['DS'][list_new[i[0]-1]] = j3
         # print(CT)
-
+        # for key in new_shares_list:
+        #     print(key[0])
 
         CT['policy'] = setting['NewPolicy']
 
@@ -239,13 +240,11 @@ class Encryption:
 # trapdoor------------------------------------------------
         search_kw_list = setting['search_kw']
         keyword_list = setting['keyword']
-        # print(search_kw_list)
         u = dac.group.random()        
         rho2 = dac.group.random()
         rho2_inv = rho2 ** (-1)
         search_kw_val_in_z_p = []
         for keyword_name in search_kw_list:
-            # print(keyword_list[keyword_name])
             search_kw_val = dac.group.hash(search_kw_list[keyword_name], type=ZR)
             search_kw_val_in_z_p.append(search_kw_val)
         T1 = GPP['g'] ** u
@@ -259,38 +258,50 @@ class Encryption:
                 T5_temp = T5_temp + search_kw_val_in_z_p[i] ** (l1)
             T5.append(rho2_inv * T5_temp)
             T5_temp = rho2 - rho2
-                # T5.append(rho2_inv * (search_kw_val_in_z_p[0] ** (l1) + search_kw_val_in_z_p[1] ** (l1) + search_kw_val_in_z_p[2] ** (l1)))
         # print(T5)
+
 # search test------------------------------------------------
         # print(CT['C2'], T1)
         left = pair(CT['C2'], T1)
         
-        right_result = rho2 - rho2
+        right_tmp = rho2 - rho2
         for i, j in zip(CT['I_hat'], T5):
-            right_result = right_result + i * j  
-        # print(right_result)
-        right = CT['E'] ** (T3 * right_result)
+            right_tmp = right_tmp + i * j  
+        right = CT['E'] ** (T3 * right_tmp)
         
-        # print("left: ", left)
+        # print("left:  ", left)
         # print("right: ", right)
         # if left == right:
-        #     print("left == right")
+        #     print("left = right")
 #CT Update Verification---------------------------------------
         trusted_party_decrypt_key = self.get_trusted_party_decrypt_keys()
         z_0 = dac.group.random()
         z_0_inv = ~(z_0)
+        CTUVK = trusted_party_decrypt_key['keys'][1] * z_0
+
         trusted_party_decrypt_key['authoritySecretKeys']['K'] = trusted_party_decrypt_key['authoritySecretKeys']['K'] ** z_0_inv
         trusted_party_decrypt_key['authoritySecretKeys']['L'] = trusted_party_decrypt_key['authoritySecretKeys']['L'] ** z_0_inv
         trusted_party_decrypt_key['authoritySecretKeys']['R'] = trusted_party_decrypt_key['authoritySecretKeys']['R'] ** z_0_inv
         for key in trusted_party_decrypt_key['authoritySecretKeys']['AK']:
             trusted_party_decrypt_key['authoritySecretKeys']['AK'][key] = trusted_party_decrypt_key['authoritySecretKeys']['AK'][key] ** z_0_inv
         trusted_party_decrypt_key['keys'][0] = trusted_party_decrypt_key['keys'][0] ** z_0_inv
-        TK1a = self.outsourcing(GPP, CT, trusted_party_decrypt_key['authoritySecretKeys'], trusted_party_decrypt_key['keys'][0])
-        TK1a = TK1a ** z_0
-        PT1a = dac.decrypt(CT, TK1a, trusted_party_decrypt_key['keys'][1])
-        AES_key = objectToBytes(PT1a,PairingGroup('SS512')).decode("utf-8")
-        dec_result = self.AES_decrypt(cipher_text,AES_key)
-        print(dec_result)
+
+        VTK = self.outsourcing(GPP, CT, trusted_party_decrypt_key['authoritySecretKeys'], trusted_party_decrypt_key['keys'][0])
+        
+        # Verification
+        egg_alpha_s = APK['e_alpha'] ** secret
+        TKgen_result = VTK ** CTUVK
+        print("publisher: ", egg_alpha_s)
+        print("broker: ", TKgen_result)
+        if egg_alpha_s == TKgen_result:
+            print("publisher result = broker result")
+
+        # dec
+        # VTK = VTK ** z_0
+        # PT1a = dac.decrypt(CT, VTK, trusted_party_decrypt_key['keys'][1])
+        # AES_key = objectToBytes(PT1a,PairingGroup('SS512')).decode("utf-8")
+        # dec_result = self.AES_decrypt(cipher_text,AES_key)
+        # print(dec_result)
 #------------------------------------------------------------
         return (cipher_AES_key,cipher_text,CT['policy'])  #return CT['policy']
 
