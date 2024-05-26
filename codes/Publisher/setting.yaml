@@ -1,4 +1,5 @@
 BrockerIP: 10.18.173.78
+ProxyIP: 10.18.173.78
 BrockerLoginUser: Publisher-1
 BrockerLoginPassword: abc123
 IntervelTimeSecond: 2

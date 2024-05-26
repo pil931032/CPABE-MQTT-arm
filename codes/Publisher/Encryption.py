@@ -86,6 +86,30 @@ class Encryption:
         keys = bytesToObject(keys,PairingGroup('SS512'))
         return keys    
 
+
+    def outsourcing(self,GPP,CT,AuthoritySecretKeys,UserKey):
+        # Load server ip
+        setting = self.load_setting()
+        # GPP
+        del GPP['H']
+        GPP = objectToBytes(GPP,PairingGroup('SS512')).decode("utf-8")
+        # CT
+        CT= objectToBytes(CT,PairingGroup('SS512')).decode("utf-8")
+        # AuthoritySecretKeys
+        AuthoritySecretKeys= objectToBytes(AuthoritySecretKeys,PairingGroup('SS512')).decode("utf-8")
+        # UserKey
+        UserKey= objectToBytes(UserKey,PairingGroup('SS512')).decode("utf-8")
+        data = {
+            'GPP': GPP,
+            'CT' : CT,
+            'AuthoritySecretKeys' : AuthoritySecretKeys,
+            'UserKey' : UserKey
+        }
+        r = requests.post('https://'+setting['ProxyIP']+':8080/decrypt/', data = data, verify=False)
+        json_obj = json.loads(r.text)
+        return bytesToObject(json_obj['result'],PairingGroup('SS512'))
+
+
     def encrypt(self,message:str):
         dac = ABENCLWH(PairingGroup('SS512'))
         string_encode = StringEncode()
@@ -251,9 +275,23 @@ class Encryption:
         # print("right: ", right)
         # if left == right:
         #     print("left == right")
-#------------------------------------------------------------
+#CT Update Verification---------------------------------------
         trusted_party_decrypt_key = self.get_trusted_party_decrypt_keys()
-        print(trusted_party_decrypt_key)
+        z_0 = dac.group.random()
+        z_0_inv = ~(z_0)
+        trusted_party_decrypt_key['authoritySecretKeys']['K'] = trusted_party_decrypt_key['authoritySecretKeys']['K'] ** z_0_inv
+        trusted_party_decrypt_key['authoritySecretKeys']['L'] = trusted_party_decrypt_key['authoritySecretKeys']['L'] ** z_0_inv
+        trusted_party_decrypt_key['authoritySecretKeys']['R'] = trusted_party_decrypt_key['authoritySecretKeys']['R'] ** z_0_inv
+        for key in trusted_party_decrypt_key['authoritySecretKeys']['AK']:
+            trusted_party_decrypt_key['authoritySecretKeys']['AK'][key] = trusted_party_decrypt_key['authoritySecretKeys']['AK'][key] ** z_0_inv
+        trusted_party_decrypt_key['keys'][0] = trusted_party_decrypt_key['keys'][0] ** z_0_inv
+        TK1a = self.outsourcing(GPP, CT, trusted_party_decrypt_key['authoritySecretKeys'], trusted_party_decrypt_key['keys'][0])
+        TK1a = TK1a ** z_0
+        PT1a = dac.decrypt(CT, TK1a, trusted_party_decrypt_key['keys'][1])
+        AES_key = objectToBytes(PT1a,PairingGroup('SS512')).decode("utf-8")
+        dec_result = self.AES_decrypt(cipher_text,AES_key)
+        print(dec_result)
+#------------------------------------------------------------
         return (cipher_AES_key,cipher_text,CT['policy'])  #return CT['policy']
 
 if __name__ == '__main__':
