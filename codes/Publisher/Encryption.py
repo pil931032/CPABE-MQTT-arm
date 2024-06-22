@@ -202,7 +202,7 @@ class Encryption:
         # print(CT)
         list_new = list(new_shares_dict)
         list_old = list(old_shares_dict)
-        
+# type1 update --------------------------------------------------------------------------        
         for i, j in zip(I1, type1_UK):
             # print(list_old[i[1]-1],"before update:")
             # print(CT['C'][list_old[i[1]-1]])  #print parameter 'C' before updation
@@ -212,10 +212,12 @@ class Encryption:
         # print(CT)
 
 
-# type2 ['E_0', 'E_1'] problem
+# type2 update --------------------------------------------------------------------------
+        # print(CT['C'][list_new[5]])
         # for  i, j1, j2 in zip(I2, type2_UK_1, type2_UK_2):
         #     CT['C'][list_old[i[1]-1]] = CT['C'][list_old[i[1]-1]] * (GPP['g_a'] ** j)
 
+# type3 update --------------------------------------------------------------------------       
         for i, j1, j2, j3 in zip(I3, type3_UK_1, type3_UK_2, type3_UK_3):
             # print(list_new[i[0]-1])
             CT['C'][list_new[i[0]-1]] = j1
@@ -291,10 +293,12 @@ class Encryption:
         # Verification
         egg_alpha_s = APK['e_alpha'] ** secret
         TKgen_result = VTK ** CTUVK
-        print("publisher: ", egg_alpha_s)
-        print("broker: ", TKgen_result)
-        if egg_alpha_s == TKgen_result:
-            print("publisher result = broker result")
+    # print result------------------------------------
+        # print("publisher: ", egg_alpha_s)
+        # print("broker: ", TKgen_result)
+        # if egg_alpha_s == TKgen_result:
+        #     print("publisher result = broker result")
+    # ------------------------------------------------
 
         # dec
         # VTK = VTK ** z_0

@@ -111,6 +111,10 @@ class Decryption:
 
     def decryption(self,cipher_key:str,cipher_text:str):
         # CPABE
+        # store CT as CT.yaml
+        with open('cipher_key.yaml', 'w') as f:
+            yaml.dump(cipher_key, f)
+
         CT =  bytesToObject(cipher_key,PairingGroup('SS512'))
         dac = DACMACS(PairingGroup('SS512'))
         decryption = Decryption()

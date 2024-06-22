@@ -1,3 +1,7 @@
 BrockerIP: 10.18.173.78
 ProxyIP: 10.18.173.78
 IntervelTimeSecond: 2
+keyword: {kw1: v_kw1, kw2: v_kw2, kw3: v_kw3, kw4: v_kw4}
+search_kw: {kw1: v_kw1, kw2: v_kw2, kw3: v_kw3}
+BrockerLoginUser: Subscriber-1
+BrockerLoginPassword: cde123
