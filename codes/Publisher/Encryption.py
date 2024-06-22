@@ -79,7 +79,7 @@ class Encryption:
         # Load server ip
         setting = self.load_setting()
         user_password = self.load_trusted_party_password()
-        # Receice global parameters
+        # Receive global parameters
         r = requests.get('https://'+setting['BrockerIP']+':443/trusted_party/decrypt-keys/'+user_password['user']+'/'+user_password['password'], verify=False)
         obj = json.loads(r.text)
         keys = obj['decrypt-keys']
@@ -226,7 +226,7 @@ class Encryption:
         # print(CT)
         # for key in new_shares_list:
         #     print(key[0])
-
+# 'NewPolicy' update -------------------------------------------------------------------------- 
         CT['policy'] = setting['NewPolicy']
 
         cipher_AES_key = objectToBytes(CT, PairingGroup('SS512')).decode("utf-8")
@@ -306,7 +306,14 @@ class Encryption:
         # AES_key = objectToBytes(PT1a,PairingGroup('SS512')).decode("utf-8")
         # dec_result = self.AES_decrypt(cipher_text,AES_key)
         # print(dec_result)
-#------------------------------------------------------------
+
+# send CT to broker------------------------------------------
+        BytesCT= objectToBytes(CT,PairingGroup('SS512')).decode("utf-8")
+        CTdata = {'CT' : BytesCT}
+        rCT = requests.post('https://'+setting['BrockerIP']+':443/Ciphertext/', data = CTdata, verify=False)
+        json_obj = json.loads(rCT.text)
+        # print(bytesToObject(json_obj['result'],PairingGroup('SS512')))
+
         return (cipher_AES_key,cipher_text,CT['policy'])  #return CT['policy']
 
 if __name__ == '__main__':
