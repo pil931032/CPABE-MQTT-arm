@@ -66,35 +66,47 @@ class KWSearch:
         # print(T5)
         return (T1, T3, T5)
         
-    def searching():
+    def searching(self):
         dac = ABENCLWH(PairingGroup('SS512'))
-        with open("cipher_key.yaml") as stream:
-            try:
-                cipher_key = yaml.safe_load(stream)
-                # print(CT)
-            except yaml.YAMLError as exc:
-                print(exc)
-        CT =  bytesToObject(cipher_key,PairingGroup('SS512'))
-
-        # kwsearch = KWSearch()
+        setting = self.load_setting()
         T1, T3, T5 = kwsearch.trapdoor_generation()
-        # print(CT['C2'], T1)
-        left = pair(CT['C2'], T1)
 
-        rho3 = dac.group.random()
-        right_tmp = rho3 - rho3
-
-        for i, j in zip(CT['I_hat'], T5):
-            right_tmp = right_tmp + i * j  
-        right = CT['E'] ** (T3 * right_tmp)
+        # with open("cipher_key.yaml") as stream:
+        #     try:
+        #         cipher_key = yaml.safe_load(stream)
+        #         # print(CT)
+        #     except yaml.YAMLError as exc:
+        #         print(exc)
+        # CT =  bytesToObject(cipher_key,PairingGroup('SS512'))
+    
+    # left----------------------------------------------------------
+        # left = pair(CT['C2'], T1)
+    # right----------------------------------------------------------
+        # rho3 = dac.group.random()
+        # right_tmp = rho3 - rho3
+        # for i, j in zip(CT['I_hat'], T5):
+        #     right_tmp = right_tmp + i * j  
+        # right = CT['E'] ** (T3 * right_tmp)
+    # test----------------------------------------------------------
+        # print("left:  ", left)
+        # print("right: ", right)
+        # if left == right:
+        #     print("left = right")
         
-        print("left:  ", left)
-        print("right: ", right)
-        if left == right:
-            print("left = right")
 
+        TD = {
+            'T1' : T1,
+            'T3' : T3,
+            'T5' : T5,
+        }
+        BytesTD= objectToBytes(TD,PairingGroup('SS512')).decode("utf-8")
+        TDdata = {'TD' : BytesTD}
+        rTD = requests.post('https://'+setting['BrockerIP']+':443/SearchingKW/', data = TDdata, verify=False)
+        json_obj = json.loads(rTD.text)
 
+        # print(bytesToObject(json_obj['result'],PairingGroup('SS512')))
+        print(json_obj['result'])
 
 if __name__ == '__main__':
     kwsearch = KWSearch()
-    KWSearch.searching()
+    KWSearch().searching()

@@ -25,10 +25,10 @@ async def main_loop(setting):
     MQTT_client = MQTTClient()
 
     # -----send the same message-----
-    # message = Message()
-    # message_text,plain_text = message.get()
-    # message_object = json.loads(message_text)
-    # plain_text_object = json.loads(plain_text)
+    message = Message()
+    message_text,plain_text = message.get()
+    message_object = json.loads(message_text)
+    plain_text_object = json.loads(plain_text)
     # -----send the same message-----
 
     while True:
@@ -36,10 +36,10 @@ async def main_loop(setting):
             await MQTT_client.connect('mqtt://'+setting['BrockerIP']+'/')
 
             # -----send different message-----
-            message = Message()
-            message_text,plain_text = message.get()
-            message_object = json.loads(message_text)
-            plain_text_object = json.loads(plain_text)
+            # message = Message()
+            # message_text,plain_text = message.get()
+            # message_object = json.loads(message_text)
+            # plain_text_object = json.loads(plain_text)
             # -----send different message-----
 
             # print(type(message_object))
