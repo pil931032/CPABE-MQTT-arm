@@ -39,7 +39,7 @@ class PublishEmulation:
 
     # encrypted data
         encryption = Encryption()
-        cipher_AES_Key,cipher_text,policy = encryption.encrypt(plain_text) #add return policy
+        cipher_AES_Key,cipher_text,policy,secret,old_shares_list = encryption.encrypt(plain_text) #add return policy
         self.message['policy']=policy  #return policy
         self.message['Cipher_AES_Key'] = cipher_AES_Key
         self.message['Cipher_Text'] = cipher_text
@@ -63,8 +63,8 @@ class PublishEmulation:
             Topic = '/message/public',
             # Time = datetime_string
         )
-
-        return (json.dumps(self.message),plain_text)
+# json.dumps(self.message),plain_text
+        return (secret,old_shares_list,cipher_AES_Key)
 
 if __name__ == '__main__':
     pubemu = PublishEmulation()

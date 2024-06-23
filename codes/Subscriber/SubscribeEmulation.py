@@ -96,11 +96,12 @@ class SubscribeEmulation:
         }
         BytesTD= objectToBytes(TD,PairingGroup('SS512')).decode("utf-8")
         TDdata = {'TD' : BytesTD}
-        rTD = requests.post('https://'+setting['BrockerIP']+':443/SubscriberEmu/', data = TDdata, verify=False)
-        json_obj = json.loads(rTD.text)
+        r = requests.post('https://'+setting['BrockerIP']+':443/SubscriberEmu/', data = TDdata, verify=False)
+        # print(r)
+        json_obj = json.loads(r.text)
 
         # cipher_AES_Key = bytesToObject(json_obj['result'],PairingGroup('SS512'))
-        cipher_AES_Key = json_obj['result']
+        cipher_AES_Key = json_obj['result1']
         cipher_text = json_obj['result2']
         # print(cipher_text)
         # print(bytesToObject(json_obj['result'],PairingGroup('SS512')))

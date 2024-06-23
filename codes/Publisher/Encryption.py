@@ -86,7 +86,7 @@ class Encryption:
         keys = bytesToObject(keys,PairingGroup('SS512'))
         return keys    
 
-
+# for ciphertext update Verification
     def outsourcing(self,GPP,CT,AuthoritySecretKeys,UserKey):
         # Load server ip
         setting = self.load_setting()
@@ -119,6 +119,7 @@ class Encryption:
         policy_str = setting['Policy']
 
         GPP,authorities = self.get_global_parameter()
+        _, APK, authAttrs = authorities
         # print(authorities)
         # Generate A String for AES Key
         AES_key_before_serialization = PairingGroup('SS512').random(GT)
@@ -145,90 +146,66 @@ class Encryption:
         # C_test = CT_without_secret['C']
         # print(CT_without_secret['C']['WORKER'])
 
-        # EncryptionInfo = dict()
-        # EncryptionInfo['secret'] = secret
-        # EncryptionInfo['old_shares_list'] = old_shares_list
-        # data = json.dump(EncryptionInfo)
-        # with open('EnInfo.json', 'w') as EI:
-        #     json.dump(data, EI)
-        
+# send CT to broker (before policy update)------------------------------------------
+        BytesCT= objectToBytes(CT,PairingGroup('SS512')).decode("utf-8")
+        CTdata = {'CT' : BytesCT}
+        rCT = requests.post('https://'+setting['BrockerIP']+':443/Ciphertext/', data = CTdata, verify=False)
+        json_obj = json.loads(rCT.text)
+# ----------------------------------------------------------------------------------
 
-        pc = PolicyCompare(PairingGroup('SS512'))
-        I1,I2,I3,new_shares_list = pc.compare(secret,old_shares_list)
-        # print("I1 list:",I1)
-        # print("I2 list:",I2)
-        # print("I3 list:",I3)
-        # print("old_shares_list:",old_shares_list)
-        # print("new_shares_list:",new_shares_list)
+   
+# policy update-------------------------------------------------------------------------- -------------------------------------------------------------------------- 
+#         pc = PolicyCompare(PairingGroup('SS512'))
+#         I1,I2,I3,new_shares_list = pc.compare(secret,old_shares_list)        
+#         type1_UK, type2_UK_1, type2_UK_2, type3_UK_1, type3_UK_2, type3_UK_3 = [], [], [], [], [], []
+#         for i in I1:
+#             a = new_shares_list[i[0]-1][1]
+#             b = old_shares_list[i[1]-1][1]
+#             type1_UK.append(a - b) 
+      
+#         for i in I2:
+#             a = new_shares_list[i[0]-1][1]
+#             b = old_shares_list[i[1]-1][1]
+#             type2_UK_1.append(a - b) 
+#             type2_UK_2.append(pc.group.random())
 
-        # print(new_shares_list[I1[0][0]-1][1],old_shares_list[I1[0][1]-1][1])
-        # print(new_shares_list[I1[1][0]-1][1],old_shares_list[I1[1][1]-1][1])
-        # print(new_shares_list[I1[2][0]-1][1],old_shares_list[I1[2][1]-1][1])
-        # print(" ")
-        
-        type1_UK, type2_UK_1, type2_UK_2, type3_UK_1, type3_UK_2, type3_UK_3 = [], [], [], [], [], []
-        for i in I1:
-            a = new_shares_list[i[0]-1][1]
-            b = old_shares_list[i[1]-1][1]
-            type1_UK.append(a - b) 
-        # print("type1_UK ", type1_UK)
-        
-        for i in I2:
-            a = new_shares_list[i[0]-1][1]
-            b = old_shares_list[i[1]-1][1]
-            type2_UK_1.append(a - b) 
-            type2_UK_2.append(pc.group.random())
-        # print("type2_UK_1 ", type2_UK_1)
-        # print("type2_UK_2 ", type2_UK_2)
+#         new_shares_dict = dict([(x[0].getAttributeAndIndex(), x[1]) for x in new_shares_list])
+#         old_shares_dict = dict([(x[0].getAttributeAndIndex(), x[1]) for x in old_shares_list])
+#         attr_key = list(new_shares_dict)
 
 
-        new_shares_dict = dict([(x[0].getAttributeAndIndex(), x[1]) for x in new_shares_list])
-        old_shares_dict = dict([(x[0].getAttributeAndIndex(), x[1]) for x in old_shares_list])
-        attr_key = list(new_shares_dict)
-        # print(attr_key)
-        _, APK, authAttrs = authorities
-        for i in I3:
-            lambda_prime = new_shares_list[i[0]-1][1]
+#         for i in I3:
+#             lambda_prime = new_shares_list[i[0]-1][1]
             
-            attrPK = authAttrs[attr_key[i[0]-1]]
-            r_i_prime = pc.group.random()
-            type3_UK_1.append((GPP['g_a'] ** lambda_prime) * ~(attrPK['PK'] ** r_i_prime))
-            type3_UK_2.append(APK['g_beta_inv'] ** r_i_prime)
-            type3_UK_3.append(~(APK['g_beta_gamma'] ** r_i_prime))
-        # print("type3_UK_1", type3_UK_1)
-        # print("type3_UK_2", type3_UK_2)
-        # print("type3_UK_3", type3_UK_3)
-        # print("\n")
-        # print(CT)
-        list_new = list(new_shares_dict)
-        list_old = list(old_shares_dict)
-# type1 update --------------------------------------------------------------------------        
-        for i, j in zip(I1, type1_UK):
-            # print(list_old[i[1]-1],"before update:")
-            # print(CT['C'][list_old[i[1]-1]])  #print parameter 'C' before updation
-            CT['C'][list_old[i[1]-1]] = CT['C'][list_old[i[1]-1]] * (GPP['g_a'] ** j) #update parameter 'C'
-            # print(list_old[i[1]-1],"after update:")
-            # print(CT['C'][list_old[i[1]-1]],"\n")  #print parameter 'C' after updation
-        # print(CT)
+#             attrPK = authAttrs[attr_key[i[0]-1]]
+#             r_i_prime = pc.group.random()
+#             type3_UK_1.append((GPP['g_a'] ** lambda_prime) * ~(attrPK['PK'] ** r_i_prime))
+#             type3_UK_2.append(APK['g_beta_inv'] ** r_i_prime)
+#             type3_UK_3.append(~(APK['g_beta_gamma'] ** r_i_prime))
+
+#         list_new = list(new_shares_dict)
+#         list_old = list(old_shares_dict)
+# # type1 update --------------------------------------------------------------------------        
+#         for i, j in zip(I1, type1_UK):
+#             CT['C'][list_old[i[1]-1]] = CT['C'][list_old[i[1]-1]] * (GPP['g_a'] ** j) #update parameter 'C'
 
 
-# type2 update --------------------------------------------------------------------------
-        # print(CT['C'][list_new[5]])
-        # for  i, j1, j2 in zip(I2, type2_UK_1, type2_UK_2):
-        #     CT['C'][list_old[i[1]-1]] = CT['C'][list_old[i[1]-1]] * (GPP['g_a'] ** j)
 
-# type3 update --------------------------------------------------------------------------       
-        for i, j1, j2, j3 in zip(I3, type3_UK_1, type3_UK_2, type3_UK_3):
-            # print(list_new[i[0]-1])
-            CT['C'][list_new[i[0]-1]] = j1
-            CT['D'][list_new[i[0]-1]] = j2
-            CT['DS'][list_new[i[0]-1]] = j3
-        # print(CT)
-        # for key in new_shares_list:
-        #     print(key[0])
-# 'NewPolicy' update -------------------------------------------------------------------------- 
-        CT['policy'] = setting['NewPolicy']
+# # type2 update --------------------------------------------------------------------------
+#         # print(CT['C'][list_new[5]])
+#         # for  i, j1, j2 in zip(I2, type2_UK_1, type2_UK_2):
+#         #     CT['C'][list_old[i[1]-1]] = CT['C'][list_old[i[1]-1]] * (GPP['g_a'] ** j)
 
+# # type3 update --------------------------------------------------------------------------       
+#         for i, j1, j2, j3 in zip(I3, type3_UK_1, type3_UK_2, type3_UK_3):
+#             # print(list_new[i[0]-1])
+#             CT['C'][list_new[i[0]-1]] = j1
+#             CT['D'][list_new[i[0]-1]] = j2
+#             CT['DS'][list_new[i[0]-1]] = j3
+
+# # 'NewPolicy' update -------------------------------------------------------------------------- 
+#         CT['policy'] = setting['NewPolicy']
+# policy update-------------------------------------------------------------------------- -------------------------------------------------------------------------- 
         cipher_AES_key = objectToBytes(CT, PairingGroup('SS512')).decode("utf-8")
         cipher_text = self.AES_encrypt(message,AES_Key_base64_utf8)
         # print("Origin AES Key")
@@ -240,65 +217,65 @@ class Encryption:
         
 
 # trapdoor------------------------------------------------
-        search_kw_list = setting['search_kw']
-        keyword_list = setting['keyword']
-        u = dac.group.random()        
-        rho2 = dac.group.random()
-        rho2_inv = rho2 ** (-1)
-        search_kw_val_in_z_p = []
-        for keyword_name in search_kw_list:
-            search_kw_val = dac.group.hash(search_kw_list[keyword_name], type=ZR)
-            search_kw_val_in_z_p.append(search_kw_val)
-        T1 = GPP['g'] ** u
-        T3 = u * rho2 * (((rho2/rho2) * len(search_kw_val_in_z_p)) ** (-1)) 
-        T5 = []
-        # print(search_kw_val_in_z_p)
-        T5_temp = rho2 - rho2
-        for l1 in range(0, len(keyword_list) + 1):    
-            for i in range(0, len(search_kw_val_in_z_p) ):
-                # print(i,"  ", l1)
-                T5_temp = T5_temp + search_kw_val_in_z_p[i] ** (l1)
-            T5.append(rho2_inv * T5_temp)
-            T5_temp = rho2 - rho2
-        # print(T5)
+        # search_kw_list = setting['search_kw']
+        # keyword_list = setting['keyword']
+        # u = dac.group.random()        
+        # rho2 = dac.group.random()
+        # rho2_inv = rho2 ** (-1)
+        # search_kw_val_in_z_p = []
+        # for keyword_name in search_kw_list:
+        #     search_kw_val = dac.group.hash(search_kw_list[keyword_name], type=ZR)
+        #     search_kw_val_in_z_p.append(search_kw_val)
+        # T1 = GPP['g'] ** u
+        # T3 = u * rho2 * (((rho2/rho2) * len(search_kw_val_in_z_p)) ** (-1)) 
+        # T5 = []
+        # # print(search_kw_val_in_z_p)
+        # T5_temp = rho2 - rho2
+        # for l1 in range(0, len(keyword_list) + 1):    
+        #     for i in range(0, len(search_kw_val_in_z_p) ):
+        #         # print(i,"  ", l1)
+        #         T5_temp = T5_temp + search_kw_val_in_z_p[i] ** (l1)
+        #     T5.append(rho2_inv * T5_temp)
+        #     T5_temp = rho2 - rho2
+        # # print(T5)
 
 # search test------------------------------------------------
-        # print(CT['C2'], T1)
-        left = pair(CT['C2'], T1)
+        # # print(CT['C2'], T1)
+        # left = pair(CT['C2'], T1)
         
-        right_tmp = rho2 - rho2
-        for i, j in zip(CT['I_hat'], T5):
-            right_tmp = right_tmp + i * j  
-        right = CT['E'] ** (T3 * right_tmp)
+        # right_tmp = rho2 - rho2
+        # for i, j in zip(CT['I_hat'], T5):
+        #     right_tmp = right_tmp + i * j  
+        # right = CT['E'] ** (T3 * right_tmp)
         
-        # print("left:  ", left)
-        # print("right: ", right)
-        # if left == right:
-        #     print("left = right")
+        # # print("left:  ", left)
+        # # print("right: ", right)
+        # # if left == right:
+        # #     print("left = right")
 #CT Update Verification---------------------------------------
-        trusted_party_decrypt_key = self.get_trusted_party_decrypt_keys()
-        z_0 = dac.group.random()
-        z_0_inv = ~(z_0)
-        CTUVK = trusted_party_decrypt_key['keys'][1] * z_0
+        # trusted_party_decrypt_key = self.get_trusted_party_decrypt_keys()
+        # z_0 = dac.group.random()
+        # z_0_inv = ~(z_0)
+        # CTUVK = trusted_party_decrypt_key['keys'][1] * z_0
 
-        trusted_party_decrypt_key['authoritySecretKeys']['K'] = trusted_party_decrypt_key['authoritySecretKeys']['K'] ** z_0_inv
-        trusted_party_decrypt_key['authoritySecretKeys']['L'] = trusted_party_decrypt_key['authoritySecretKeys']['L'] ** z_0_inv
-        trusted_party_decrypt_key['authoritySecretKeys']['R'] = trusted_party_decrypt_key['authoritySecretKeys']['R'] ** z_0_inv
-        for key in trusted_party_decrypt_key['authoritySecretKeys']['AK']:
-            trusted_party_decrypt_key['authoritySecretKeys']['AK'][key] = trusted_party_decrypt_key['authoritySecretKeys']['AK'][key] ** z_0_inv
-        trusted_party_decrypt_key['keys'][0] = trusted_party_decrypt_key['keys'][0] ** z_0_inv
+        # trusted_party_decrypt_key['authoritySecretKeys']['K'] = trusted_party_decrypt_key['authoritySecretKeys']['K'] ** z_0_inv
+        # trusted_party_decrypt_key['authoritySecretKeys']['L'] = trusted_party_decrypt_key['authoritySecretKeys']['L'] ** z_0_inv
+        # trusted_party_decrypt_key['authoritySecretKeys']['R'] = trusted_party_decrypt_key['authoritySecretKeys']['R'] ** z_0_inv
+        # for key in trusted_party_decrypt_key['authoritySecretKeys']['AK']:
+        #     trusted_party_decrypt_key['authoritySecretKeys']['AK'][key] = trusted_party_decrypt_key['authoritySecretKeys']['AK'][key] ** z_0_inv
+        # trusted_party_decrypt_key['keys'][0] = trusted_party_decrypt_key['keys'][0] ** z_0_inv
 
-        VTK = self.outsourcing(GPP, CT, trusted_party_decrypt_key['authoritySecretKeys'], trusted_party_decrypt_key['keys'][0])
+        # VTK = self.outsourcing(GPP, CT, trusted_party_decrypt_key['authoritySecretKeys'], trusted_party_decrypt_key['keys'][0])
         
-        # Verification
-        egg_alpha_s = APK['e_alpha'] ** secret
-        TKgen_result = VTK ** CTUVK
-    # print result------------------------------------
+        # # Verification
+        # egg_alpha_s = APK['e_alpha'] ** secret
+        # TKgen_result = VTK ** CTUVK
+# print result-------------------------------------------------------------------
         # print("publisher: ", egg_alpha_s)
         # print("broker: ", TKgen_result)
         # if egg_alpha_s == TKgen_result:
         #     print("publisher result = broker result")
-    # ------------------------------------------------
+# -------------------------------------------------------------------------------
 
         # dec
         # VTK = VTK ** z_0
@@ -307,14 +284,16 @@ class Encryption:
         # dec_result = self.AES_decrypt(cipher_text,AES_key)
         # print(dec_result)
 
-# send CT to broker------------------------------------------
-        BytesCT= objectToBytes(CT,PairingGroup('SS512')).decode("utf-8")
-        CTdata = {'CT' : BytesCT}
-        rCT = requests.post('https://'+setting['BrockerIP']+':443/Ciphertext/', data = CTdata, verify=False)
-        json_obj = json.loads(rCT.text)
-        # print(bytesToObject(json_obj['result'],PairingGroup('SS512')))
+# send CT to broker (after policy update)------------------------------------------
+        # BytesCT= objectToBytes(CT,PairingGroup('SS512')).decode("utf-8")
+        # CTdata = {'CT' : BytesCT}
+        # rCT = requests.post('https://'+setting['BrockerIP']+':443/Ciphertext/', data = CTdata, verify=False)
+        # json_obj = json.loads(rCT.text)
 
-        return (cipher_AES_key,cipher_text,CT['policy'])  #return CT['policy']
+        # print(bytesToObject(json_obj['result'],PairingGroup('SS512')))
+# -------------------------------------------------------------------------------
+        print(type(CT['policy']))
+        return (cipher_AES_key,cipher_text,CT['policy'],secret,old_shares_list)  #return CT['policy']
 
 if __name__ == '__main__':
     encryption = Encryption()
