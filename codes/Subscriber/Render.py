@@ -27,7 +27,7 @@ class Render:
                 Total_Time="N/A",
             ):
         os.system('clear')
-        Decrypt_Setup_Time = str(float(Decrypt_Time) - (float(Outsourcing_Time)+float(Local_Decrypt_time)))
+        # Decrypt_Setup_Time = str(float(Decrypt_Time) - (float(Outsourcing_Time)+float(Local_Decrypt_time)))
         # Table 1
         table = Table()
         table.add_column("", justify="right", style="cyan", no_wrap=True)
@@ -43,12 +43,13 @@ class Render:
         table.add_row("Cipher Text", Cipher_Text,style="gold3")
         table.add_row("Brocker IP", Brocker_IP,style="gold3")
         table.add_row("Proxy IP", Proxy_IP,style="gold3")
-        table.add_row("Transmission Time", Transmission_Time+" s",style="gold3")
-        table.add_row("Decrypt setup Time", Decrypt_Setup_Time+" s",style="bright_cyan")
+        # table.add_row("Transmission Time", Transmission_Time+" s",style="gold3")
+        # table.add_row("Decrypt setup Time", Decrypt_Setup_Time+" s",style="bright_cyan")
         table.add_row("Outsourcing Decrypt Time", Outsourcing_Time+" s",style="bright_cyan")
         table.add_row("Local Decrypt time", Local_Decrypt_time+" s",style="bright_cyan")
-        table.add_row("Decrypt total Time", Decrypt_Time+" s",style="bright_red")
-        table.add_row("Total Time", Total_Time+" s",style="bright_red")
+        # table.add_row("Decrypt total Time", Decrypt_Time+" s",style="bright_red")
+        # table.add_row("Total Time", Total_Time+" s",style="bright_red")
+        
         # Table 2
         # table2 = Table()
         # table2.add_column("Cipher AES Key", justify="center", style="cyan", no_wrap=True)
