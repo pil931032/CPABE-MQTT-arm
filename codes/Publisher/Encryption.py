@@ -205,7 +205,7 @@ class Encryption:
 
 # # 'NewPolicy' update -------------------------------------------------------------------------- 
 #         CT['policy'] = setting['NewPolicy']
-# policy update-------------------------------------------------------------------------- -------------------------------------------------------------------------- 
+# -------------------------------------------------------------------------- -------------------------------------------------------------------------- 
         cipher_AES_key = objectToBytes(CT, PairingGroup('SS512')).decode("utf-8")
         cipher_text = self.AES_encrypt(message,AES_Key_base64_utf8)
         # print("Origin AES Key")
@@ -214,8 +214,12 @@ class Encryption:
         test_d = cipher_AES_key.encode('utf-8')
         bytesToObject(test_d,PairingGroup('SS512'))
         # print('Success!',cipher_AES_key)
-        
 
+# preserve eggas for ciphertext update verification by publisher
+        egg_alpha_s = APK['e_alpha'] ** secret
+        eggas = objectToBytes(egg_alpha_s, PairingGroup('SS512')).decode("utf-8")
+        with open('eggas.yaml','w') as f:
+            yaml.dump(eggas, f)   
 # trapdoor------------------------------------------------
         # search_kw_list = setting['search_kw']
         # keyword_list = setting['keyword']
@@ -252,25 +256,29 @@ class Encryption:
         # # print("right: ", right)
         # # if left == right:
         # #     print("left = right")
-#CT Update Verification---------------------------------------
-        # trusted_party_decrypt_key = self.get_trusted_party_decrypt_keys()
-        # z_0 = dac.group.random()
-        # z_0_inv = ~(z_0)
-        # CTUVK = trusted_party_decrypt_key['keys'][1] * z_0
+# CT Update Verification---------------------------------------
+        trusted_party_decrypt_key = self.get_trusted_party_decrypt_keys()
+        z_0 = dac.group.random()
+        z_0_inv = ~(z_0)
+        CTUVK = trusted_party_decrypt_key['keys'][1] * z_0
 
-        # trusted_party_decrypt_key['authoritySecretKeys']['K'] = trusted_party_decrypt_key['authoritySecretKeys']['K'] ** z_0_inv
-        # trusted_party_decrypt_key['authoritySecretKeys']['L'] = trusted_party_decrypt_key['authoritySecretKeys']['L'] ** z_0_inv
-        # trusted_party_decrypt_key['authoritySecretKeys']['R'] = trusted_party_decrypt_key['authoritySecretKeys']['R'] ** z_0_inv
-        # for key in trusted_party_decrypt_key['authoritySecretKeys']['AK']:
-        #     trusted_party_decrypt_key['authoritySecretKeys']['AK'][key] = trusted_party_decrypt_key['authoritySecretKeys']['AK'][key] ** z_0_inv
-        # trusted_party_decrypt_key['keys'][0] = trusted_party_decrypt_key['keys'][0] ** z_0_inv
+        trusted_party_decrypt_key['authoritySecretKeys']['K'] = trusted_party_decrypt_key['authoritySecretKeys']['K'] ** z_0_inv
+        trusted_party_decrypt_key['authoritySecretKeys']['L'] = trusted_party_decrypt_key['authoritySecretKeys']['L'] ** z_0_inv
+        trusted_party_decrypt_key['authoritySecretKeys']['R'] = trusted_party_decrypt_key['authoritySecretKeys']['R'] ** z_0_inv
+        for key in trusted_party_decrypt_key['authoritySecretKeys']['AK']:
+            trusted_party_decrypt_key['authoritySecretKeys']['AK'][key] = trusted_party_decrypt_key['authoritySecretKeys']['AK'][key] ** z_0_inv
+        trusted_party_decrypt_key['keys'][0] = trusted_party_decrypt_key['keys'][0] ** z_0_inv
 
-        # VTK = self.outsourcing(GPP, CT, trusted_party_decrypt_key['authoritySecretKeys'], trusted_party_decrypt_key['keys'][0])
+        VTK = self.outsourcing(GPP, CT, trusted_party_decrypt_key['authoritySecretKeys'], trusted_party_decrypt_key['keys'][0])
         
-        # # Verification
+        # Verification
         # egg_alpha_s = APK['e_alpha'] ** secret
-        # TKgen_result = VTK ** CTUVK
-# print result-------------------------------------------------------------------
+        # eggas = objectToBytes(egg_alpha_s, PairingGroup('SS512')).decode("utf-8")
+        # with open('eggas.yaml','w') as f:
+        #     yaml.dump(eggas, f)                
+        
+        TKgen_result = VTK ** CTUVK
+    # print result----------------------------------------------------------------
         # print("publisher: ", egg_alpha_s)
         # print("broker: ", TKgen_result)
         # if egg_alpha_s == TKgen_result:
@@ -292,7 +300,6 @@ class Encryption:
 
         # print(bytesToObject(json_obj['result'],PairingGroup('SS512')))
 # -------------------------------------------------------------------------------
-        print(type(CT['policy']))
         return (cipher_AES_key,cipher_text,CT['policy'],secret,old_shares_list)  #return CT['policy']
 
 if __name__ == '__main__':
