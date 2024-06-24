@@ -43,8 +43,9 @@ class SubscribeEmulation:
         warnings.filterwarnings("ignore")
         # Load server ip
         setting = self.load_setting()
+        user_password = self.load_subscriber_user_password()
         # Receice global parameters
-        r = requests.get('https://'+setting['BrockerIP']+':443/subscriber/global-parameters/'+setting['SubscriberLoginUser']+'/'+setting['SubscriberLoginPassword'],verify=False)
+        r = requests.get('https://'+setting['BrockerIP']+':443/subscriber/global-parameters/'+user_password['user']+'/'+user_password['password'],verify=False)
         json_obj = json.loads(r.text)
         GPP = bytesToObject(json_obj['GPP'], PairingGroup('SS512'))
         authority = bytesToObject(json_obj['authority'], PairingGroup('SS512'))
@@ -87,6 +88,7 @@ class SubscribeEmulation:
     def searching(self):
         dac = ABENCLWH(PairingGroup('SS512'))
         setting = self.load_setting()
+        user_password = self.load_subscriber_user_password()
         T1, T3, T5 = subemu.trapdoor_generation()
 
         TD = {
@@ -128,7 +130,7 @@ class SubscribeEmulation:
         except:
             os.system('clear')
             print( Fore.RED + "========= Decrypt fail =========")
-
+        
         # finish_decrypt_time = datetime.datetime.now()
         # Time-consuming calculation
         # start_time = datetime.datetime.fromtimestamp(utc_time.timestamp())
@@ -136,11 +138,14 @@ class SubscribeEmulation:
         # total_time_string = str((finish_time - start_time).total_seconds())
         # total_decrypt_time = str((finish_decrypt_time - start_decrypt_time).total_seconds())
         # transmission_time = str((receive_time - start_time).total_seconds())
-        # outsourcing_total_time = str(outsourcing_total_time.total_seconds())
-        # local_decrypt_total_time =  str(local_decrypt_total_time.total_seconds())
+        outsourcing_total_time = str(outsourcing_total_time.total_seconds())        #outsourse
+        local_decrypt_total_time =  str(local_decrypt_total_time.total_seconds())   #local
         
-    # Render
         result = json.loads(plain_text)
+        # print(type(outsourcing_total_time))
+        # print(outsourcing_total_time)
+        # print(local_decrypt_total_time)
+    # Render
         render = Render()
         render.table(
             CPU_Temperature=str(result['CPU_Temperature']),
@@ -156,8 +161,8 @@ class SubscribeEmulation:
 
             # Decrypt_Time = total_decrypt_time,
             # Transmission_Time = transmission_time,
-            # Outsourcing_Time = outsourcing_total_time,
-            # Local_Decrypt_time = local_decrypt_total_time,
+            Outsourcing_Time = outsourcing_total_time,      #outsourse
+            Local_Decrypt_time = local_decrypt_total_time,  #local
             # Total_Time = total_time_string,
         )
 
