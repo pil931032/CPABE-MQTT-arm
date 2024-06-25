@@ -1,9 +1,5 @@
 BrockerIP: 10.18.173.78
 ProxyIP: 10.18.173.78
 IntervelTimeSecond: 2
-keyword: {kw1: v_kw1, kw2: v_kw2, kw3: v_kw3, kw4: v_kw4}
-search_kw: {kw1: v_kw1, kw2: v_kw2, kw3: v_kw3}
-# SubscriberLoginUser: Alice
-# SubscriberLoginPassword: ccc123
-# SubscriberLoginUser: Bob
-# SubscriberLoginPassword: ddd123
+keyword: {kw1: aaa, kw2: bbb, kw3: ccc, kw4: ddd}
+search_kw: {kw1: aaa, kw2: bbb, kw3: ccc}

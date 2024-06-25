@@ -118,4 +118,4 @@ class KWSearch:
 
 if __name__ == '__main__':
     kwsearch = KWSearch()
-    KWSearch().searching()
+    kwsearch.searching()
