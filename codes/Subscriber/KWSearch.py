@@ -18,6 +18,10 @@ class KWSearch:
         with open('setting.yaml', 'r') as f:
             return yaml.safe_load(f)
 
+    def load_subscriber_user_password(self):
+        with open('subscriber_user_password.yaml', 'r') as f:
+            return yaml.safe_load(f)
+
     def get_global_parameter(self):
         """
         return GPP, authority
@@ -25,8 +29,9 @@ class KWSearch:
         warnings.filterwarnings("ignore")
         # Load server ip
         setting = self.load_setting()
+        user_password = self.load_subscriber_user_password()
         # Receice global parameters
-        r = requests.get('https://'+setting['BrockerIP']+':443/subscriber/global-parameters/'+setting['SubscriberLoginUser']+'/'+setting['SubscriberLoginPassword'],verify=False)
+        r = requests.get('https://'+setting['BrockerIP']+':443/subscriber/global-parameters/'+user_password['user']+'/'+user_password['password'],verify=False)
         json_obj = json.loads(r.text)
         GPP = bytesToObject(json_obj['GPP'], PairingGroup('SS512'))
         authority = bytesToObject(json_obj['authority'], PairingGroup('SS512'))
@@ -104,8 +109,12 @@ class KWSearch:
         rTD = requests.post('https://'+setting['BrockerIP']+':443/SearchingKW/', data = TDdata, verify=False)
         json_obj = json.loads(rTD.text)
 
-        # print(bytesToObject(json_obj['result'],PairingGroup('SS512')))
-        print(json_obj['result'])
+        left = bytesToObject(json_obj['left'],PairingGroup('SS512'))
+        right = bytesToObject(json_obj['right'],PairingGroup('SS512'))
+
+        print("right = ", right)
+        print("left = ", left)
+        print("search result: ", json_obj['result'])
 
 if __name__ == '__main__':
     kwsearch = KWSearch()
