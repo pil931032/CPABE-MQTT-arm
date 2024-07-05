@@ -14,6 +14,8 @@ import requests
 import warnings
 from PolicyCompare import PolicyCompare
 from PublishEmulation import PublishEmulation
+import datetime
+from obtain_params import obtain_params
 
 class GenPolicyUpdateKey:
     def load_setting(self):
@@ -46,7 +48,7 @@ class GenPolicyUpdateKey:
         GPP,authorities = self.get_global_parameter()
 
     # get secret, old_shares_list and cipher_AES_Key
-        pubemu = PublishEmulation()
+        pubemu = obtain_params()
         secret, old_shares_list, cipher_AES_Key = pubemu.emu()    
         CT = bytesToObject(cipher_AES_Key,PairingGroup('SS512'))
 
@@ -99,19 +101,6 @@ class GenPolicyUpdateKey:
         pukdata = {'puk' : updatekeys_bytes}
         rpuk = requests.post('https://'+setting['BrockerIP']+':443/PolicyUpdateKey/', data = pukdata, verify=False)
         json_obj = json.loads(rpuk.text)
-        # print(bytesToObject(json_obj['result'],PairingGroup('SS512')))
-
-    # update policy
-        # list_new = list(new_shares_dict)
-        # list_old = list(old_shares_dict)
-        
-        # for i, j in zip(I1, type1_UK):
-        #     CT['C'][list_old[i[1]-1]] = CT['C'][list_old[i[1]-1]] * (GPP['g_a'] ** j) #update parameter 'C'
-
-        # for i, j1, j2, j3 in zip(I3, type3_UK_1, type3_UK_2, type3_UK_3):
-        #     CT['C'][list_new[i[0]-1]] = j1
-        #     CT['D'][list_new[i[0]-1]] = j2
-        #     CT['DS'][list_new[i[0]-1]] = j3
 
 
 if __name__ == '__main__':

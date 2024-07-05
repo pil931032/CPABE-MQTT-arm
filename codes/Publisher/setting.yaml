@@ -3,7 +3,15 @@ ProxyIP: 10.18.173.78
 BrockerLoginUser: Publisher-1
 BrockerLoginPassword: abc123
 IntervelTimeSecond: 2
-# Policy: ((OFFICER or WORKER) and (DEVELOPER or MAINTAINER))
 NewPolicy: (((E or C) or (B and F)) and ((A and I) or H))
 Policy: (((A and B) and (C and D)) and ((E and F) and K))
 keyword: {kw1: aaa, kw2: bbb, kw3: ccc, kw4: ddd}
+# type1
+# NewPolicy: A and B and C and D and E and F and G and H and I and J and K and L
+# Policy: A and B and C and D and E and F and G and H and I and J and K and L
+# type2
+# NewPolicy: A and A and A and A and A and A and A and A and A and A and A and A and A
+# Policy: A and B and C and D and E and F and G and H and I and J and K and L
+# type3
+# NewPolicy: A and B and C and D and E and F and G and H and I and J and K and L
+# Policy: M and N and O and P and Q and R and S and T and U and V and W and X
