@@ -129,7 +129,7 @@ class SubscribeEmulation:
             plain_text,user_attribute,outsourcing_total_time,local_decrypt_total_time = decryption.decryption(Cipher_AES_Key,Cipher_Text)
         except:
             os.system('clear')
-            print( Fore.RED + "========= Decrypt fail =========")
+            print( Fore.RED + "========= Decryption failure =========")
         
         # finish_decrypt_time = datetime.datetime.now()
         # Time-consuming calculation

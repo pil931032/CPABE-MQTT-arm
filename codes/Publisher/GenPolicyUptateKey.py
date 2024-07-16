@@ -98,6 +98,12 @@ class GenPolicyUpdateKey:
 
         updatekeys_bytes = objectToBytes(updatekeys,PairingGroup('SS512'))
 
+        show_udk = updatekeys
+        del show_udk['I1']
+        del show_udk['I2']
+        del show_udk['I3']
+        print(show_udk)
+        
         pukdata = {'puk' : updatekeys_bytes}
         rpuk = requests.post('https://'+setting['BrockerIP']+':443/PolicyUpdateKey/', data = pukdata, verify=False)
         json_obj = json.loads(rpuk.text)
